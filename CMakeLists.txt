@@ -317,7 +317,8 @@ set(SWIFT_DARWIN_VARIANTS "^(macosx|iphoneos|iphonesimulator|appletvos|appletvsi
 # variable that will do the job.
 set(SWIFT_GYB_FLAGS
     "-DunicodeGraphemeBreakPropertyFile=${SWIFT_SOURCE_DIR}/utils/UnicodeData/GraphemeBreakProperty.txt"
-    "-DunicodeGraphemeBreakTestFile=${SWIFT_SOURCE_DIR}/utils/UnicodeData/GraphemeBreakTest.txt")
+    "-DunicodeGraphemeBreakTestFile=${SWIFT_SOURCE_DIR}/utils/UnicodeData/GraphemeBreakTest.txt"
+    "-DunicodeEmojiDataFile=${SWIFT_SOURCE_DIR}/utils/UnicodeData/emoji-data.txt")
 
 # Directory to use as the Clang module cache when building Swift source files.
 set(SWIFT_MODULE_CACHE_PATH
@@ -440,7 +441,7 @@ elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
   set(SWIFT_HOST_VARIANT_ARCH "x86_64" CACHE STRING
       "Deployment arch for Swift host tools (the compiler).")
 
-  # Display Xcode toolchain version. 
+  # Display Xcode toolchain version.
   # The SDK configuration below prints each SDK version.
   execute_process(
     COMMAND "xcodebuild" "-version"

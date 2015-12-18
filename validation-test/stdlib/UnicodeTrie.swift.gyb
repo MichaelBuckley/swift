@@ -10,7 +10,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-// RUN: rm -rf %t && mkdir -p %t && %S/../../utils/gyb -DunicodeGraphemeBreakPropertyFile=%S/../../utils/UnicodeData/GraphemeBreakProperty.txt -DunicodeGraphemeBreakTestFile=%S/../../utils/UnicodeData/GraphemeBreakTest.txt %s -o %t/UnicodeTrie.swift
+// RUN: rm -rf %t && mkdir -p %t && %S/../../utils/gyb -DunicodeGraphemeBreakPropertyFile=%S/../../utils/UnicodeData/GraphemeBreakProperty.txt -DunicodeGraphemeBreakTestFile=%S/../../utils/UnicodeData/GraphemeBreakTest.txt -DunicodeEmojiDataFile=%S/../../utils/UnicodeData/emoji-data.txt %s -o %t/UnicodeTrie.swift
 // RUN: %S/../../utils/line-directive %t/UnicodeTrie.swift -- %target-build-swift %t/UnicodeTrie.swift -o %t/a.out -g -Xfrontend -disable-access-control
 // RUN: %S/../../utils/line-directive %t/UnicodeTrie.swift -- %target-run %t/a.out
 // REQUIRES: executable_test
@@ -23,7 +23,7 @@
 from GYBUnicodeDataUtils import *
 
 grapheme_cluster_break_property_table = \
-    GraphemeClusterBreakPropertyTable(unicodeGraphemeBreakPropertyFile)
+    GraphemeClusterBreakPropertyTable(unicodeGraphemeBreakPropertyFile, unicodeEmojiDataFile)
 
 }%
 
@@ -55,6 +55,8 @@ UnicodeTrie.test("_UnicodeGraphemeClusterBreakPropertyTrie") {
       expected[cp] = value
     }
   }
+
+  expected[0x200D] = _GraphemeClusterBreakPropertyValue.ZWJ
 
   for cp in UInt32(0)...UInt32(0x10ffff) {
     if cp % 0x10000 == 0 {
@@ -244,6 +246,32 @@ UnicodeTrie.test("GraphemeClusterSegmentation/Unicode_8_0_0") {
       SourceLocStack().withCurrentLoc())
 }
 
+UnicodeTrie.test("GraphemeClusterSegmentation/Skin_Tone_Emoji") {
+    // In UTR #51, this sequence can be represented as a single grapheme
+    // cluster.
+    //
+    // U+270C VICTORY HAND
+    // U+1F3FE EMOJI MODIFIER FITZPATRICK TYPE-5
+    checkGraphemeClusterSegmentation(
+        [ 0, 2 ],
+        scalars: [ 0x270C, 0x1F3FE ],
+        SourceLocStack().withCurrentLoc())
+}
+
+UnicodeTrie.test("GraphemeClusterSegmentation/Emoji_Sequences") {
+    // In UTR #51, this sequence can be represented as a single grapheme
+    // cluster.
+    //
+    // U+1F469 WOMAN
+    // U+200D ZERO-WIDTH JOINER
+    // U+2764 HEAVY BLACK HEART
+    // U+200D ZERO-WIDTH JOINER
+    // U+1F469 WOMAN
+    checkGraphemeClusterSegmentation(
+        [ 0, 5 ],
+        scalars: [ 0x1F469, 0x200D, 0x2764, 0x200D, 0x1F469 ],
+        SourceLocStack().withCurrentLoc())
+}
 
 runAllTests()
 
