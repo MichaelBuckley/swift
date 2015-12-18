@@ -42,6 +42,8 @@ enum class GraphemeClusterBreakProperty : uint8_t {
   T,
   LV,
   LVT,
+  ZWJ,
+  Emoji,
   Emoji_Modifier_Base,
   Emoji_Modifier,
 };
@@ -50,7 +52,7 @@ enum class GraphemeClusterBreakProperty : uint8_t {
 /// by first code point, then by second code point in least-significant-bit
 /// order.  A set bit means that a boundary is prohibited between two code
 /// points.
-extern const uint16_t ExtendedGraphemeClusterNoBoundaryRulesMatrix[];
+extern const uint32_t ExtendedGraphemeClusterNoBoundaryRulesMatrix[];
 
 /// Returns the value of the Grapheme_Cluster_Break property for a given code
 /// point.

@@ -57,8 +57,10 @@ class GraphemeClusterBreakPropertyTable(UnicodeProperty):
       'T': 10,
       'LV': 11,
       'LVT': 12,
-      'Emoji_Modifier_Base' : 13,
-      'Emoji_Modifier' : 14
+      'ZWJ': 13,
+      'Emoji': 14,
+      'Emoji_Modifier_Base': 15,
+      'Emoji_Modifier': 16
     }
 
     def __init__(self, grapheme_break_property_file_name, emoji_data_file_name):
@@ -94,7 +96,7 @@ class GraphemeClusterBreakPropertyTable(UnicodeProperty):
                     elif value == 'modifier':
                         value = 'Emoji_Modifier'
                     elif value == 'none':
-                        value = 'Other'
+                        value = 'Emoji'
 
                     self.property_value_ranges += \
                         [(code_point, code_point, value)]
@@ -118,6 +120,8 @@ class GraphemeClusterBreakPropertyTable(UnicodeProperty):
         for start_code_point,end_code_point,value in self.property_value_ranges:
             for cp in range(start_code_point, end_code_point + 1):
                 self.property_values[cp] = value
+        
+        self.property_values[0x200D] = 'ZWJ'
 
     def get_default_value(self):
         return 'Other'
@@ -482,9 +486,11 @@ def get_extended_grapheme_cluster_rules_matrix(grapheme_cluster_break_property_t
       ( [ 'L' ], 'no_boundary', [ 'L', 'V', 'LV', 'LVT' ] ),
       ( [ 'LV', 'V' ], 'no_boundary', [ 'V', 'T' ] ),
       ( [ 'LVT', 'T' ], 'no_boundary', [ 'T' ] ),
-      ( [ 'Emoji_Modifier_Base' ], 'no_boundary', [ 'Emoji_Modifier' ] ),
       ( [ 'Regional_Indicator' ], 'no_boundary', [ 'Regional_Indicator' ] ),
-      ( any_value, 'no_boundary', [ 'Extend' ] ),
+      ( [ 'Emoji_Modifier_Base' ], 'no_boundary', [ 'Emoji_Modifier' ] ),
+      ( [ 'Emoji', 'Emoji_Modifier_Base', 'Emoji_Modifier' ], 'no_boundary', [ 'ZWJ' ] ),
+      ( [ 'ZWJ' ], 'no_boundary', [ 'Emoji', 'Emoji_Modifier_Base', 'Emoji_Modifier' ] ),
+      ( any_value, 'no_boundary', [ 'Extend', 'ZWJ' ] ),
       ( any_value, 'no_boundary', [ 'SpacingMark' ] ),
       ( [ 'Prepend' ], 'no_boundary', any_value ),
       ( any_value, 'boundary', any_value ),
@@ -502,8 +508,8 @@ def get_extended_grapheme_cluster_rules_matrix(grapheme_cluster_break_property_t
             for second in secondList:
                 rules_matrix[first][second] = action
 
-    # Make sure we can pack one row of the matrix into a 'uint16_t'.
-    assert(len(any_value) <= 16)
+    # Make sure we can pack one row of the matrix into a 'uint32_t'.
+    assert(len(any_value) <= 32)
 
     result = []
     for first in any_value:

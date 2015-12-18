@@ -56,6 +56,8 @@ UnicodeTrie.test("_UnicodeGraphemeClusterBreakPropertyTrie") {
     }
   }
 
+  expected[0x200D] = _GraphemeClusterBreakPropertyValue.ZWJ
+
   for cp in UInt32(0)...UInt32(0x10ffff) {
     if cp % 0x10000 == 0 {
       print("\(cp)...")
@@ -245,9 +247,7 @@ UnicodeTrie.test("GraphemeClusterSegmentation/Unicode_8_0_0") {
 }
 
 UnicodeTrie.test("GraphemeClusterSegmentation/Skin_Tone_Emoji") {
-    // Verify that we are using Unicode 8.0.0+ data tables.
-
-    // In Unicode 8.0.0, this sequence can be represented as a single grapheme
+    // In UTR #51, this sequence can be represented as a single grapheme
     // cluster.
     //
     // U+270C VICTORY HAND
@@ -255,6 +255,21 @@ UnicodeTrie.test("GraphemeClusterSegmentation/Skin_Tone_Emoji") {
     checkGraphemeClusterSegmentation(
         [ 0, 2 ],
         scalars: [ 0x270C, 0x1F3FE ],
+        SourceLocStack().withCurrentLoc())
+}
+
+UnicodeTrie.test("GraphemeClusterSegmentation/Emoji_Sequences") {
+    // In UTR #51, this sequence can be represented as a single grapheme
+    // cluster.
+    //
+    // U+1F469 WOMAN
+    // U+200D ZERO-WIDTH JOINER
+    // U+2764 HEAVY BLACK HEART
+    // U+200D ZERO-WIDTH JOINER
+    // U+1F469 WOMAN
+    checkGraphemeClusterSegmentation(
+        [ 0, 5 ],
+        scalars: [ 0x1F469, 0x200D, 0x2764, 0x200D, 0x1F469 ],
         SourceLocStack().withCurrentLoc())
 }
 

@@ -32,13 +32,13 @@ SuppLookup1BytesPerEntry = 1
 SuppLookup2BytesPerEntry = 1
 SuppDataBytesPerEntry = 1
 
-TrieSize = 20753
+TrieSize = 23057
 
 BMPLookupBytesOffset = 0
 BMPDataBytesOffset = 256
-SuppLookup1BytesOffset = 12544
-SuppLookup2BytesOffset = 12561
-SuppDataBytesOffset = 13329
+SuppLookup1BytesOffset = 14336
+SuppLookup2BytesOffset = 14353
+SuppDataBytesOffset = 15121
 
 }%
 
@@ -59,8 +59,10 @@ enum _GraphemeClusterBreakPropertyValue : Int, CustomStringConvertible {
   case T = 10
   case LV = 11
   case LVT = 12
-  case Emoji_Modifier_Base = 13
-  case Emoji_Modifier = 14
+  case ZWJ = 13
+  case Emoji = 14
+  case Emoji_Modifier_Base = 15
+  case Emoji_Modifier = 16
 
   /// A textual representation of `self`.
   public // @testable
@@ -92,6 +94,10 @@ enum _GraphemeClusterBreakPropertyValue : Int, CustomStringConvertible {
       return "LV"
     case LVT:
       return "LVT"
+    case ZWJ:
+        return "ZWJ"
+    case Emoji:
+        return "Emoji"
     case Emoji_Modifier_Base:
       return "Emoji_Modifier_Base"
     case Emoji_Modifier:
@@ -251,7 +257,7 @@ struct _UnicodeGraphemeClusterBreakPropertyTrie {
 }
 
 internal struct _UnicodeExtendedGraphemeClusterSegmenter {
-  let _noBoundaryRulesMatrix: UnsafePointer<UInt16>
+  let _noBoundaryRulesMatrix: UnsafePointer<UInt32>
 
   init() {
     _noBoundaryRulesMatrix =
@@ -274,7 +280,7 @@ internal struct _UnicodeExtendedGraphemeClusterSegmenter {
       _ gcb2: _GraphemeClusterBreakPropertyRawValue
   ) -> Bool {
     let ruleRow = _noBoundaryRulesMatrix[Int(gcb1.rawValue)]
-    return (ruleRow & (1 << UInt16(gcb2.rawValue))) == 0
+    return (ruleRow & (1 << UInt32(gcb2.rawValue))) == 0
   }
 }
 

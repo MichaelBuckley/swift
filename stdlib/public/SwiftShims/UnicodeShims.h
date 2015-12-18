@@ -44,7 +44,7 @@ struct _swift_stdlib_GraphemeClusterBreakPropertyTrieMetadataTy {
 extern const struct _swift_stdlib_GraphemeClusterBreakPropertyTrieMetadataTy
 _swift_stdlib_GraphemeClusterBreakPropertyTrieMetadata;
 
-extern const __swift_uint16_t *
+extern const __swift_uint32_t *
 _swift_stdlib_ExtendedGraphemeClusterNoBoundaryRulesMatrix;
 
 __swift_int32_t _swift_stdlib_unicode_compare_utf16_utf16(
