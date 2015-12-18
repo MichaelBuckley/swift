@@ -57,9 +57,11 @@ class GraphemeClusterBreakPropertyTable(UnicodeProperty):
       'T': 10,
       'LV': 11,
       'LVT': 12,
+      'Emoji_Modifier_Base' : 13,
+      'Emoji_Modifier' : 14
     }
 
-    def __init__(self, grapheme_break_property_file_name):
+    def __init__(self, grapheme_break_property_file_name, emoji_data_file_name):
         # Build 'self.symbolic_values' -- an array that maps numeric property
         # values to symbolic values.
         self.symbolic_values = \
@@ -67,29 +69,47 @@ class GraphemeClusterBreakPropertyTable(UnicodeProperty):
         for k,v in self.numeric_value_table.iteritems():
             self.symbolic_values[v] = k
 
-        # Load the data file.
-        with open(grapheme_break_property_file_name, 'rb') as f:
+        self.load_file(
+            grapheme_break_property_file_name,
+            '([0-9A-F]+) +; +([a-zA-Z]+) ',
+            '([0-9A-F]+)..([0-9A-F]+) +; +([a-zA-Z_]+) '
+        )
+
+        self.load_file(emoji_data_file_name, '([0-9A-F]+) +;[^;]+ ;[^;]+;\t([a-zA-Z]+) ;', None)
+
+    def load_file(self, filename, single_regex, range_regex):
+        with open(filename, 'rb') as f:
             for line in f:
                 # Strip comments.
                 line = re.sub('#.*', '', line)
 
                 # Single code point?
-                m = re.match('([0-9A-F]+) +; +([a-zA-Z]+) ', line)
+                m = re.match(single_regex, line)
                 if m:
                     code_point = int(m.group(1), 16)
                     value = m.group(2)
+
+                    if value == 'primary' or value == 'secondary':
+                        value = 'Emoji_Modifier_Base'
+                    elif value == 'modifier':
+                        value = 'Emoji_Modifier'
+                    elif value == 'none':
+                        value = 'Other'
+
                     self.property_value_ranges += \
                         [(code_point, code_point, value)]
                     continue
 
                 # Range of code points?
-                m = re.match('([0-9A-F]+)..([0-9A-F]+) +; +([a-zA-Z_]+) ', line)
-                if m:
-                    start_code_point = int(m.group(1), 16)
-                    end_code_point = int(m.group(2), 16)
-                    value = m.group(3)
-                    self.property_value_ranges += \
-                        [(start_code_point, end_code_point, value)]
+                if range_regex is not None:
+                    m = re.match(range_regex, line)
+                    if m:
+                        start_code_point = int(m.group(1), 16)
+                        end_code_point = int(m.group(2), 16)
+                        value = m.group(3)
+
+                        self.property_value_ranges += \
+                            [(start_code_point, end_code_point, value)]
 
         # Prepare a flat lookup table for fast access.
         for cp in range(0, 0x110000):
@@ -462,6 +482,7 @@ def get_extended_grapheme_cluster_rules_matrix(grapheme_cluster_break_property_t
       ( [ 'L' ], 'no_boundary', [ 'L', 'V', 'LV', 'LVT' ] ),
       ( [ 'LV', 'V' ], 'no_boundary', [ 'V', 'T' ] ),
       ( [ 'LVT', 'T' ], 'no_boundary', [ 'T' ] ),
+      ( [ 'Emoji_Modifier_Base' ], 'no_boundary', [ 'Emoji_Modifier' ] ),
       ( [ 'Regional_Indicator' ], 'no_boundary', [ 'Regional_Indicator' ] ),
       ( any_value, 'no_boundary', [ 'Extend' ] ),
       ( any_value, 'no_boundary', [ 'SpacingMark' ] ),
@@ -598,4 +619,3 @@ def get_grapheme_cluster_break_tests_as_unicode_scalars(grapheme_break_test_file
                 result += [ test ]
 
     return result
-

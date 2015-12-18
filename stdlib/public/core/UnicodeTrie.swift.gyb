@@ -32,13 +32,13 @@ SuppLookup1BytesPerEntry = 1
 SuppLookup2BytesPerEntry = 1
 SuppDataBytesPerEntry = 1
 
-TrieSize = 18961
+TrieSize = 20753
 
 BMPLookupBytesOffset = 0
 BMPDataBytesOffset = 256
-SuppLookup1BytesOffset = 12032
-SuppLookup2BytesOffset = 12049
-SuppDataBytesOffset = 12817
+SuppLookup1BytesOffset = 12544
+SuppLookup2BytesOffset = 12561
+SuppDataBytesOffset = 13329
 
 }%
 
@@ -59,6 +59,8 @@ enum _GraphemeClusterBreakPropertyValue : Int, CustomStringConvertible {
   case T = 10
   case LV = 11
   case LVT = 12
+  case Emoji_Modifier_Base = 13
+  case Emoji_Modifier = 14
 
   /// A textual representation of `self`.
   public // @testable
@@ -90,6 +92,10 @@ enum _GraphemeClusterBreakPropertyValue : Int, CustomStringConvertible {
       return "LV"
     case LVT:
       return "LVT"
+    case Emoji_Modifier_Base:
+      return "Emoji_Modifier_Base"
+    case Emoji_Modifier:
+        return "Emoji_Modifier"
     }
   }
 }
