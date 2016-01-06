@@ -21,6 +21,7 @@
 #include <mutex>
 #include <assert.h>
 
+#include <unicode/brkiter.h>
 #include <unicode/ustring.h>
 #include <unicode/ucol.h>
 #include <unicode/ucoleitr.h>

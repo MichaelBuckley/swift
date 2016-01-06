@@ -16,16 +16,19 @@
 #include "swift/Basic/LLVM.h"
 #include "llvm/ADT/StringRef.h"
 
+#include "unicode/brkiter.h"
+
 namespace swift {
 namespace unicode {
 
-StringRef extractFirstExtendedGraphemeCluster(StringRef S);
-
 static inline bool isSingleExtendedGraphemeCluster(StringRef S) {
-  StringRef First = extractFirstExtendedGraphemeCluster(S);
-  if (First.empty())
-    return false;
-  return First == S;
+  UErrorCode status = U_ZERO_ERROR;
+  BreakIterator *bi = BreakIterator::createCharacterInstance(Locale("root"), status);
+  UnicodeString us = UnicodeString(S.data(), S.size());
+
+  bi->setText(us);
+
+  return bi->first() == BreakIterator::DONE;
 }
 
 enum class GraphemeClusterBreakProperty : uint8_t {
@@ -53,27 +56,6 @@ extern const uint16_t ExtendedGraphemeClusterNoBoundaryRulesMatrix[];
 /// Returns the value of the Grapheme_Cluster_Break property for a given code
 /// point.
 GraphemeClusterBreakProperty getGraphemeClusterBreakProperty(uint32_t C);
-
-/// Returns true if there is always an extended grapheme cluster boundary
-/// after a code point with a given property value.  Use only for optimization,
-/// to skip calculating Grapheme_Cluster_Break property for the second code
-/// point.
-static inline bool
-isExtendedGraphemeClusterBoundaryAfter(GraphemeClusterBreakProperty GCB1) {
-  auto RuleRow =
-      ExtendedGraphemeClusterNoBoundaryRulesMatrix[static_cast<unsigned>(GCB1)];
-  return RuleRow == 0;
-}
-
-/// Determine if there is an extended grapheme cluster boundary between code
-/// points with given Grapheme_Cluster_Break property values.
-static inline bool
-isExtendedGraphemeClusterBoundary(GraphemeClusterBreakProperty GCB1,
-                                  GraphemeClusterBreakProperty GCB2) {
-  auto RuleRow =
-      ExtendedGraphemeClusterNoBoundaryRulesMatrix[static_cast<unsigned>(GCB1)];
-  return !(RuleRow & (1 << static_cast<unsigned>(GCB2)));
-}
 
 bool isSingleUnicodeScalar(StringRef S);
 

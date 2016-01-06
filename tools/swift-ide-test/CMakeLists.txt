@@ -15,6 +15,8 @@ if(SWIFT_HAVE_LIBXML)
   add_definitions(-DSWIFT_HAVE_LIBXML="1")
 endif()
 
+target_link_libraries(swift-ide-test "-licucore")
+
 swift_install_in_component(tools
     TARGETS swift-ide-test
     RUNTIME DESTINATION bin)

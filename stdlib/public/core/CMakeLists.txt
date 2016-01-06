@@ -147,8 +147,8 @@ else()
   # TODO: However, for the moment this actually makes things explode with an
   # incomplete runtime. This should be turned back on when more of the porting
   # effort has been completed.
-  #set(LINK_FLAGS
-  #  -Wl,--whole-archive swiftRuntime -Wl,--no-whole-archive)
+  set(LINK_FLAGS
+    -licucore)
   list(APPEND swift_core_private_link_libraries swiftRuntime swiftStdlibStubs)
   find_package(ICU REQUIRED COMPONENTS uc i18n)
   list(APPEND swift_core_private_link_libraries

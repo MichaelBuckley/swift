@@ -11,7 +11,7 @@ CXXFLAGS = -std=c++11 \
 	   -I$(objroot)/tools/clang/include \
 	   -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS
 
-LDFLAGS = -L$(objroot)/lib -lswiftBasic -lLLVMSupport -lcurses
+LDFLAGS = -L$(objroot)/lib -lswiftBasic -lLLVMSupport -lcurses -licucore
 
 main: main.cpp $(srcroot)/tools/swift/include/swift/Basic/PrefixMap.h
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o main main.cpp

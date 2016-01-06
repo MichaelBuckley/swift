@@ -41,7 +41,7 @@ if(SWIFT_HOST_VARIANT MATCHES "${SWIFT_DARWIN_VARIANTS}")
   get_default_toolchain_dir(toolchain_dir)
   set(SWIFT_REPL_ARCLITE "${toolchain_dir}/usr/lib/arc/libarclite_${SWIFT_HOST_VARIANT}.a")
   set_property(TARGET swift APPEND_STRING PROPERTY
-      LINK_FLAGS " -lobjc -Wl,-force_load,\"${SWIFT_REPL_ARCLITE}\"")
+      LINK_FLAGS " -lobjc -licucore -Wl,-force_load,\"${SWIFT_REPL_ARCLITE}\"")
 endif()
 
 swift_install_in_component(compiler
