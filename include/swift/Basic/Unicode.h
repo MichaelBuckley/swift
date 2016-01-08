@@ -22,19 +22,23 @@ namespace swift {
 namespace unicode {
 
 static inline bool isSingleExtendedGraphemeCluster(StringRef S) {
-  if (S.empty()) {
-      return false;
+  bool isSingle = false;
+
+  if (!S.empty()) {
+    UErrorCode status = U_ZERO_ERROR;
+    BreakIterator *bi = BreakIterator::createCharacterInstance(Locale("root"), status);
+    UnicodeString us = UnicodeString(S.data(), S.size());
+
+    bi->setText(us);
+    bi->first();
+    bi->next();
+
+    isSingle = bi->next() == BreakIterator::DONE;
+
+    delete bi;
   }
 
-  UErrorCode status = U_ZERO_ERROR;
-  BreakIterator *bi = BreakIterator::createCharacterInstance(Locale("root"), status);
-  UnicodeString us = UnicodeString(S.data(), S.size());
-
-  bi->setText(us);
-  bi->first();
-  bi->next();
-
-  return bi->next() == BreakIterator::DONE;
+  return isSingle;
 }
 
 enum class GraphemeClusterBreakProperty : uint8_t {
