@@ -81,6 +81,7 @@ import SortLettersInPlace
 import SortStrings
 import StaticArray
 import StrComplexWalk
+import StrGraphemeWalk
 import StrToInt
 import StringBuilder
 import StringInterpolation
@@ -161,6 +162,7 @@ precommitTests = [
   "SortStrings": run_SortStrings,
   "StaticArray": run_StaticArray,
   "StrComplexWalk": run_StrComplexWalk,
+  "StrGraphemeWalk": run_StrGraphemeWalk,
   "StrToInt": run_StrToInt,
   "StringBuilder": run_StringBuilder,
   "StringInterpolation": run_StringInterpolation,

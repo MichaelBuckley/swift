@@ -80,6 +80,7 @@ set(SWIFT_BENCH_MODULES
     single-source/StringInterpolation
     single-source/StringTests
     single-source/StringWalk
+    single-source/StrGraphemeWalk
     single-source/StrToInt
     single-source/SuperChars
     single-source/TwoSum
